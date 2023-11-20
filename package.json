@@ -2,12 +2,13 @@
   "name": "mmafmt",
   "displayName": "mmafmt",
   "description": "fmt code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "url": "whatever"
   },
   "activationEvents": [
-    "onLanguage:wolfram"
+    "onLanguage:wolfram",
+    "onStartupFinished"
   ],
   "engines": {
     "vscode": "^1.75.0"
