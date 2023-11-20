@@ -17,10 +17,7 @@ function activate(context) {
       {
         async provideDocumentFormattingEdits(document) {
           try {
-            spawn("/usr/bin/wolframscript", [
-              "-f",
-              path.join(__dirname, "server.wls"),
-            ]);
+            spawn("wolframscript", ["-f", path.join(__dirname, "server.wls")]);
           } catch (e) {
             console.debug(e.message);
           }
