@@ -2,11 +2,15 @@
 
 Format mma code.
 
-Very slow, but works.
-
 Need to have <https://github.com/WolframResearch/codeformatter> installed first.
 
 Make sure you have `wolframscript` in your `PATH`.
+
+run
+
+```
+wolframscript -f server.wls &
+```
 
 ---
 
