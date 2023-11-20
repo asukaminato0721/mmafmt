@@ -17,9 +17,10 @@ function activate(context) {
       {
         async provideDocumentFormattingEdits(document) {
           try {
-            execSync(
-              "/usr/bin/wolframscript -f " + path.join(__dirname, "server.wls") + "  &"
-            );
+            spawn("/usr/bin/wolframscript", [
+              "-f",
+              path.join(__dirname, "server.wls"),
+            ]);
           } catch (e) {
             console.debug(e.message);
           }
