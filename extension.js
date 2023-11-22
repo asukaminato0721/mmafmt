@@ -3,7 +3,9 @@
 const vscode = require("vscode");
 const path = require("path");
 const http = require("http");
-const { spawn, exec, fork, execSync } = require("child_process");
+const { spawn } = require("child_process");
+
+const port = 5858;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -17,7 +19,11 @@ function activate(context) {
       {
         async provideDocumentFormattingEdits(document) {
           try {
-            spawn("wolframscript", ["-f", path.join(__dirname, "server.wls")]);
+            spawn("wolframscript", [
+              "-f",
+              path.join(__dirname, "server.wls"),
+              port.toString(),
+            ]);
           } catch (e) {
             console.debug(e.message);
           }
@@ -36,10 +42,11 @@ function activate(context) {
                 )
               ),
               await new Promise((resolve) => {
+                let data = "";
                 const req = http.request(
                   {
                     hostname: "127.0.0.1",
-                    port: 5858,
+                    port,
                     path: "/",
                     method: "POST",
                     headers: {
@@ -49,8 +56,10 @@ function activate(context) {
                   },
                   (res) => {
                     res.on("data", (d) => {
-                      console.debug(d.toString());
-                      resolve(d.toString());
+                      data += d.toString();
+                    });
+                    res.on("end", () => {
+                      resolve(data);
                     });
                   }
                 );
