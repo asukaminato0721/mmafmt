@@ -7,6 +7,13 @@ const { spawn } = require("child_process");
 
 const port = 5858;
 
+const child = spawn("wolframscript", [
+  "-f",
+  path.join(__dirname, "server.wls"),
+  port.toString(),
+]);
+console.debug(`server pid = ${child.pid}`);
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 /**
@@ -18,15 +25,6 @@ function activate(context) {
       { language: "wolfram" },
       {
         async provideDocumentFormattingEdits(document) {
-          try {
-            spawn("wolframscript", [
-              "-f",
-              path.join(__dirname, "server.wls"),
-              port.toString(),
-            ]);
-          } catch (e) {
-            console.debug(e.message);
-          }
           const cellContent = [];
           for (let i = 0; i < document.lineCount; i++) {
             cellContent.push(document.lineAt(i).text);
@@ -42,7 +40,7 @@ function activate(context) {
                 )
               ),
               await new Promise((resolve) => {
-                let data = "";
+                const chunks = [];
                 const req = http.request(
                   {
                     hostname: "127.0.0.1",
@@ -55,15 +53,16 @@ function activate(context) {
                     },
                   },
                   (res) => {
-                    res.on("data", (d) => {
-                      data += d.toString();
-                    });
+                    res.on("data", (chunk) => chunks.push(chunk));
                     res.on("end", () => {
+                      const data = Buffer.concat(chunks).toString();
+                      console.debug(data);
                       resolve(data);
                     });
                   }
                 );
                 req.write(cellContentString);
+                req.end();
               })
             ),
           ];
@@ -72,8 +71,14 @@ function activate(context) {
     )
   );
 }
+
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() {
+  child.stdin.end();
+  child.stdout.destroy();
+  child.stderr.destroy();
+  child.kill("SIGKILL");
+}
 
 module.exports = {
   activate,
