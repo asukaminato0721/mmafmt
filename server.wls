@@ -1,10 +1,10 @@
-#!/usr/bin/env wolframscript
-
 Print @ "Wolfram Expression Server 0.0.1 (alpha)";
 
 Print @ "Usage: wolframserver.wls [port]\n";
 
 Needs["CodeFormatter`"];
+(* https://github.com/WolframResearch/codeformatter/issues/3 *)
+CodeFormatter`$DefaultLineWidth = Infinity;
 
 If[Length[$ScriptCommandLine] == 2,
     port = ToExpression @ Part[$ScriptCommandLine, 2]
